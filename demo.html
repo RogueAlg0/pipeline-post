@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Pipeline Post - Demo</title>
+<style>
+  :root {
+    --paper: #f7f1e3;
+    --ink: #2a2419;
+    --faint: #8a7d63;
+    --rule: #2a2419;
+    --accent: #1d5c38;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #e8dfc9;
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    padding: 1rem;
+  }
+  .page {
+    max-width: 720px;
+    margin: 0 auto;
+    background: var(--paper);
+    padding: 1.5rem 1.5rem 2.5rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  }
+  .kicker {
+    text-align: center;
+    font-variant: small-caps;
+    letter-spacing: 0.35em;
+    font-size: 0.8rem;
+    color: var(--faint);
+  }
+  h1.masthead {
+    text-align: center;
+    font-size: 2.6rem;
+    margin: 0.2rem 0 0;
+    letter-spacing: 0.02em;
+  }
+  .masthead .post { color: var(--accent); }
+  .dateline {
+    display: flex;
+    justify-content: space-between;
+    border-top: 3px double var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 0.4rem 0;
+    margin: 0.8rem 0 1.2rem;
+    font-variant: small-caps;
+    letter-spacing: 0.12em;
+    font-size: 0.85rem;
+    color: var(--faint);
+  }
+  .track {
+    text-align: center;
+    font-style: italic;
+    color: var(--faint);
+    margin-bottom: 1.2rem;
+  }
+  h2.headline {
+    font-size: 1.7rem;
+    line-height: 1.2;
+    margin: 0 0 0.3rem;
+  }
+  .byline {
+    font-variant: small-caps;
+    letter-spacing: 0.1em;
+    color: var(--faint);
+    font-size: 0.85rem;
+    margin-bottom: 0.8rem;
+  }
+  .race-call {
+    font-size: 1.02rem;
+    line-height: 1.65;
+    text-align: justify;
+    hyphens: auto;
+    text-wrap: pretty;
+    margin: 0 0 1rem;
+  }
+  .race-call::first-letter {
+    font-size: 3.2em;
+    float: left;
+    line-height: 0.85;
+    padding-right: 0.08em;
+    font-weight: bold;
+  }
+  h3.card-title {
+    text-align: center;
+    font-variant: small-caps;
+    letter-spacing: 0.25em;
+    border-top: 3px double var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 0.5rem 0;
+    margin: 1.6rem 0 0.8rem;
+  }
+  table.card {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+  table.card th {
+    font-variant: small-caps;
+    letter-spacing: 0.08em;
+    text-align: left;
+    border-bottom: 2px solid var(--rule);
+    padding: 0.35rem 0.4rem;
+    font-size: 0.8rem;
+    color: var(--faint);
+  }
+  table.card td {
+    border-bottom: 1px dotted #b9ac8d;
+    padding: 0.45rem 0.4rem;
+    vertical-align: top;
+  }
+  .horse { font-weight: bold; }
+  .form { font-family: 'Courier New', monospace; letter-spacing: 0.1em; white-space: nowrap; }
+  .won { color: var(--accent); font-weight: bold; }
+  .lost { color: #a33b2e; font-weight: bold; }
+  .note { font-style: italic; color: var(--faint); font-size: 0.85rem; }
+  .stewards {
+    border: 2px solid var(--rule);
+    padding: 0.9rem 1rem;
+    margin-top: 1.6rem;
+    background: #f3ead2;
+  }
+  .stewards h4 {
+    margin: 0 0 0.4rem;
+    font-variant: small-caps;
+    letter-spacing: 0.2em;
+    text-align: center;
+  }
+  .stewards p { margin: 0.4rem 0; font-size: 0.93rem; line-height: 1.55; }
+  .footer {
+    margin-top: 1.8rem;
+    padding-top: 0.6rem;
+    border-top: 3px double var(--rule);
+    text-align: center;
+    font-variant: small-caps;
+    letter-spacing: 0.15em;
+    font-size: 0.78rem;
+    color: var(--faint);
+  }
+  .table-wrap { overflow-x: auto; }
+  /* Mobile: the race card becomes a stack of runner cards. The page
+     itself never scrolls sideways. */
+  @media (max-width: 600px) {
+    table.card thead {
+      position: absolute;
+      left: -9999px;
+      top: auto;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
+    table.card, table.card tbody, table.card tr, table.card td {
+      display: block;
+      width: 100%;
+    }
+    table.card tr {
+      border: 2px solid var(--rule);
+      margin: 0 0 0.9rem;
+      padding: 0.6rem 0.8rem;
+    }
+    table.card td {
+      border-bottom: none;
+      padding: 0.18rem 0;
+    }
+    table.card td[data-label]::before {
+      content: attr(data-label);
+      display: block;
+      font-variant: small-caps;
+      letter-spacing: 0.12em;
+      font-size: 0.72rem;
+      color: var(--faint);
+    }
+    table.card td.cell-horse { font-size: 1.2rem; }
+    table.card td.cell-horse::before { display: none; }
+    table.card .note { overflow-wrap: anywhere; }
+  }
+  /* Desktop: let the wider canvas breathe. */
+  @media (min-width: 900px) {
+    .page { max-width: 800px; padding: 2rem 2.5rem 3rem; }
+    h1.masthead { font-size: 3.2rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="kicker">All the builds that is fit to print</div>
+  <h1 class="masthead">The Pipeline <span class="post">Post</span></h1>
+  <div class="dateline"><span>Demo edition</span><span>Bitbucket Pipelines turf</span></div>
+  <div class="track" id="track"></div>
+  <h2 class="headline" id="headline"></h2>
+  <div class="byline">By our track correspondent</div>
+  <div id="calls"></div>
+  <h3 class="card-title">Official Race Card</h3>
+  <div class="table-wrap">
+  <table class="card">
+    <thead><tr><th>#</th><th>Runner</th><th>Rider</th><th>Form</th><th>Time</th><th>Result</th></tr></thead>
+    <tbody id="card"></tbody>
+  </table>
+  </div>
+  <div class="stewards">
+    <h4>Stewards' Inquiries</h4>
+    <div id="inquiries"></div>
+  </div>
+  <div class="footer">Demo mode: fixtures only, no pipelines were harmed</div>
+</div>
+<script>
+// ---- fixture data: recent Bitbucket Pipelines builds ----
+const BUILDS = [
+  { n: 458, branch: 'main',                author: 'ci-bot',  status: 'SUCCESS', secs: 252, failedStep: null },
+  { n: 457, branch: 'feature/dark-mode',    author: 'priya',   status: 'FAILED',  secs: 363, failedStep: 'test' },
+  { n: 456, branch: 'feature/dark-mode',    author: 'priya',   status: 'SUCCESS', secs: 344, failedStep: null },
+  { n: 455, branch: 'hotfix/login-redirect',author: 'marcus',  status: 'SUCCESS', secs: 238, failedStep: null },
+  { n: 454, branch: 'dependabot/npm-lodash',author: 'ci-bot',  status: 'FAILED',  secs: 134, failedStep: 'install' },
+  { n: 453, branch: 'main',                 author: 'ci-bot',  status: 'SUCCESS', secs: 271, failedStep: null },
+  { n: 452, branch: 'feature/sso-login',    author: 'jen',     status: 'FAILED',  secs: 442, failedStep: 'deploy' },
+  { n: 451, branch: 'feature/sso-login',    author: 'jen',     status: 'SUCCESS', secs: 410, failedStep: null },
+];
+
+// ---- tiny seeded rng so the demo is stable ----
+let seed = 20261009;
+function rnd() { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; }
+function pick(a) { return a[Math.floor(rnd() * a.length)]; }
+
+function horseName(branch) {
+  if (branch === 'main') return 'Main Event';
+  const tail = branch.split('/').pop().replace(/-/g, ' ');
+  return tail.replace(/\b\w/g, c => c.toUpperCase());
+}
+function fmtTime(secs) {
+  return Math.floor(secs / 60) + 'm ' + String(secs % 60).padStart(2, '0') + 's';
+}
+function formFor(branch) {
+  // last-5 form figures for this branch, most recent first
+  return BUILDS.filter(b => b.branch === branch)
+    .map(b => b.status === 'SUCCESS' ? '1' : '0').join('-') || 'debut';
+}
+function paceWord(secs, ok) {
+  if (!ok) return pick(['a troubled trip', 'a luckless run', 'no luck in running']);
+  if (secs < 240) return pick(['a blistering pace', 'a scorching gallop', 'gate-to-wire brilliance']);
+  if (secs < 360) return pick(['a workmanlike run', 'a professional performance', 'a tidy effort']);
+  return pick(['a grinding staying performance', 'a marathon effort', 'a real test of stamina']);
+}
+function failWord(step) {
+  const map = {
+    install: ['stumbled at the install hurdle', 'fell at the very first fence', 'never got out of the gate'],
+    test: ['came down at the test hurdle', 'was brought down in the testing stretch', 'faltered when the tests bit'],
+    deploy: ['was pulled up before the line', 'faded in the shadow of the post', 'found nothing when asked at deploy'],
+  };
+  return pick(map[step] || ['ran into trouble']);
+}
+
+function raceCall(b) {
+  const horse = horseName(b.branch);
+  const ok = b.status === 'SUCCESS';
+  const t = fmtTime(b.secs);
+  if (ok) {
+    return horse + ', ridden by ' + b.author + ', broke cleanly from gate #' + b.n +
+      ' and set ' + paceWord(b.secs, true) + ', stopping the clock at ' + t + '. ' +
+      pick([
+        'The crowd in the merge queue loved it.',
+        'Connections will be eyeing the nightly handicap next.',
+        'A run that flatters the whole stable.',
+        'Never looked in danger after halfway.',
+      ]);
+  }
+  return horse + ', under ' + b.author + ', ' + failWord(b.failedStep) +
+    ' and was recorded as a non-finisher after ' + t + '. ' +
+    pick([
+      'The stewards will want a word about that ' + b.failedStep + ' step.',
+      'Back to the training gallops for this one.',
+      'Connections looked shell-shocked in the unsaddling enclosure.',
+      'Money burned; the form book gets another blot.',
+    ]);
+}
+
+function inquiry(b) {
+  return 'Build #' + b.n + ' (' + horseName(b.branch) + '): ' + failWord(b.failedStep) +
+    ' after ' + fmtTime(b.secs) + '. ' +
+    pick([
+      'The inquiry found no interference; the step simply beat it.',
+      'Rider ' + b.author + ' reported the mount was never travelling.',
+      'Connections have 48 hours to lodge an appeal, or just fix the step.',
+      'No foul play suspected. Sometimes the pipeline just says no.',
+    ]);
+}
+
+// ---- render ----
+const fails = BUILDS.filter(b => b.status !== 'SUCCESS').length;
+document.getElementById('track').textContent =
+  'Track: ' + (fails > 2 ? 'Heavy' : fails > 0 ? 'Good to Soft' : 'Fast') +
+  ' - ' + BUILDS.length + ' runners declared, ' + fails + ' non-finishers';
+
+const latest = BUILDS[0];
+document.getElementById('headline').textContent =
+  latest.status === 'SUCCESS'
+    ? horseName(latest.branch).toUpperCase() + ' ROMPS HOME IN THE NIGHTLY HANDICAP'
+    : 'DRAMA AT THE TURF AS ' + horseName(latest.branch).toUpperCase() + ' FALLS';
+
+document.getElementById('calls').innerHTML =
+  BUILDS.slice(0, 4).map(b => '<p class="race-call">' + raceCall(b) + '</p>').join('');
+
+document.getElementById('card').innerHTML = BUILDS.map(b => {
+  const ok = b.status === 'SUCCESS';
+  return '<tr><td data-label="Gate">' + b.n + '</td>' +
+    '<td class="horse cell-horse">' + horseName(b.branch) + '<div class="note">' + b.branch + '</div></td>' +
+    '<td data-label="Rider">' + b.author + '</td>' +
+    '<td class="form" data-label="Form">' + formFor(b.branch) + '</td>' +
+    '<td data-label="Time">' + fmtTime(b.secs) + '</td>' +
+    '<td data-label="Result" class="' + (ok ? 'won' : 'lost') + '">' + (ok ? 'WON' : 'FELL') + '</td></tr>';
+}).join('');
+
+const inquiries = BUILDS.filter(b => b.status !== 'SUCCESS');
+document.getElementById('inquiries').innerHTML = inquiries.length
+  ? inquiries.map(b => '<p>' + inquiry(b) + '</p>').join('')
+  : '<p>A clean meeting. The stewards were reduced to watching the grass grow.</p>';
+</script>
+</body>
+</html>
